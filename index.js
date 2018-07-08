@@ -14,7 +14,7 @@ $(function() {
     var endY = 0;
     prepareForMobile();
     newgame();
-    // test();
+
     $('#newGamebtn').click(function() {
         newgame();
         return false;
@@ -27,8 +27,7 @@ $(function() {
     });
 
     function test() {
-        board[0][0] = 16666;
-        updateBoardView();
+
     }
 
     function prepareForMobile() {
@@ -51,7 +50,7 @@ $(function() {
 
     function newgame() {
         init();
-        initRankDom();
+        initDom();
         generateOneNumber();
         generateOneNumber();
     }
@@ -78,11 +77,11 @@ $(function() {
         updateScore(score);
     }
 
-    function initRankDom(){
+    function initDom(){
         var cover = $('#cover');
         cover.click(function(){
             $(this).hide();
-            $('#coverList').hide();
+            $('.cover-content').hide();
         });
     }
 
@@ -532,7 +531,8 @@ $(function() {
 
     function isgameover() {
         if (nospace(board) && nomove(board)) {
-            alert('Game Over');
+            $('#cover').show();
+            $('#gameOver').show();
         }
     }
 
