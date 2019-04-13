@@ -1,16 +1,17 @@
 <template>
   <div id="app">
-  hello world
+    <main-2048 />
   </div>
 </template>
 
 <script>
-
+import Main2048 from './components/Main'
 export default {
-
+  components: {
+    Main2048
+  }
 }
 </script>
 
-<style>
-
+<style lang="scss" scoped>
 </style>
