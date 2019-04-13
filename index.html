@@ -1,58 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
+<html>
+  <head>
+    <meta charset="utf-8">
     <meta name="viewport" content="width = device-width, height = device-height, initial-scale = 1.0,minimum-scale = 1.0,maximum-scale=1.0 , user-scalable = no" />
-    <link rel="shortcut icon" href="img/icon.jpg" >
-    <link rel="stylesheet" href="2048-style.css">
-    <script src="jquery.js"></script>
-    <script src="index.js"></script>
-    <title>2048</title>
-</head>
-
-<body>
-    <header>
-        <h1>2048</h1>
-        <div class="btn-group">
-            <a href="#" id="newGamebtn">NewGame</a>
-            <a href="#" id="rank">About</a>
-        </div>
-        <p>Score：<span id="score">0</span></p>
-    </header>
-    <div id="grid-container">
-        <div class="grid-cell" id="grid-cell-0-0"></div>
-        <div class="grid-cell" id="grid-cell-0-1"></div>
-        <div class="grid-cell" id="grid-cell-0-2"></div>
-        <div class="grid-cell" id="grid-cell-0-3"></div>
-        <div class="grid-cell" id="grid-cell-1-0"></div>
-        <div class="grid-cell" id="grid-cell-1-1"></div>
-        <div class="grid-cell" id="grid-cell-1-2"></div>
-        <div class="grid-cell" id="grid-cell-1-3"></div>
-        <div class="grid-cell" id="grid-cell-2-0"></div>
-        <div class="grid-cell" id="grid-cell-2-1"></div>
-        <div class="grid-cell" id="grid-cell-2-2"></div>
-        <div class="grid-cell" id="grid-cell-2-3"></div>
-        <div class="grid-cell" id="grid-cell-3-0"></div>
-        <div class="grid-cell" id="grid-cell-3-1"></div>
-        <div class="grid-cell" id="grid-cell-3-2"></div>
-        <div class="grid-cell" id="grid-cell-3-3"></div>
-    </div>
-    <div id="cover">
-    </div>
-    <div id="coverList" class="cover-content">
-        <h1>About</h1>
-        <ul>
-            <li>操作：PC端使用 ← ↑ → ↓ 移动滑块, 手机端滑动4*4宫格</li>
-            <li>修正：平衡随机滑块概率、修复文字溢出、修复IOS端滑动引起页面的晃动</li>
-            <li>作者：Chaser</li>
-            <li>微信：peiran0502</li>
-            <li>感谢慕课网 -  liuyubobobo 老师</li>
-        </ul>
-    </div>
-    <div id="gameOver" class="cover-content">
-      GameOver!
-    </div>
-</body>
-
+    <title>webapp2048</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
 </html>
