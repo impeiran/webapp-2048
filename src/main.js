@@ -1,5 +1,5 @@
 import $ from 'jquery'
-import './2048-style.css'
+import './index.scss'
 
 $(function () {
   var board = []
