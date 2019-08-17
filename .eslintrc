@@ -4,14 +4,7 @@
   },
   "parser": "babel-eslint",
   
-  "settings": {
-    "react": {
-      "version": "detect"
-    }
-  },
-
   "extends": [
-    "plugin:react/recommended",
     "standard"
   ],
 
