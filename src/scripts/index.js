@@ -1,14 +1,15 @@
-import $ from 'jquery'
 import '../styles/index.scss'
 
 import {
   dom,
   domSetStyles,
   domRemove,
+  domShow,
+  domHide,
   eventListen
 } from './utils'
 
-const ANIMATE_DURATION = 200
+const ANIMATE_DURATION = 250
 
 const webapp2048 = () => {
   const board = []
@@ -29,15 +30,16 @@ const webapp2048 = () => {
 
   eventListen(dom('#newGamebtn'), 'click', newgame)
 
-  // $('#newGamebtn').click(function () {
-  //   newgame()
-  //   return false
-  // })
-
-  $('#rank').click(function () {
-    $('#cover').show()
-    $('#coverList').show()
-    return false
+  const $cover = dom('#cover')
+  eventListen(dom('#rank'), 'click', () => {
+    domShow($cover)
+    domShow(dom('#coverList'))
+  })
+  eventListen($cover, 'click', () => {
+    domHide($cover)
+    dom('.cover-content').forEach(content => {
+      domHide(content)
+    })
   })
 
   function prepareForMobile () {
@@ -67,7 +69,6 @@ const webapp2048 = () => {
 
   function newgame () {
     init()
-    initDom()
     generateOneNumber()
     generateOneNumber()
   }
@@ -96,14 +97,6 @@ const webapp2048 = () => {
     updateScore(score)
   }
 
-  function initDom () {
-    var cover = $('#cover')
-    cover.click(function () {
-      $(this).hide()
-      $('.cover-content').hide()
-    })
-  }
-
   function getPosTop (i, j) {
     return cellSpace + i * (cellSpace + cellSideLength)
   }
@@ -126,6 +119,7 @@ const webapp2048 = () => {
             left: getPosLeft(i, j) + (cellSideLength / 2)
           })
         } else {
+          theNumberCell.innerText = board[i][j]
           domSetStyles(theNumberCell, {
             width: cellSideLength,
             height: cellSideLength,
@@ -146,7 +140,6 @@ const webapp2048 = () => {
             fontSize = 0.35 * cellSideLength
           }
           domSetStyles(theNumberCell, { fontSize })
-          theNumberCell.innerText = board[i][j]
         }
         hasConflicted[i][j] = false
       }
@@ -238,55 +231,40 @@ const webapp2048 = () => {
   }
 
   function showNumberWithAnimation (i, j, randNumber) {
-    var numberCell = $('#number-cell-' + i + '-' + j)
-    // const numberCell = dom(`#number-cell-${i}-${j}`)
+    const numberCell = dom(`#number-cell-${i}-${j}`)
+    const transtr = ['width', 'height', 'top', 'left'].map(item => {
+      return `${item} 0.05s`
+    }).join(',')
 
-    // numberCell.innerText = randNumber
-    // domSetStyles(numberCell, {
-    //   color: getNumberColor(randNumber),
-    //   fontSize: 0.6 * cellSideLength,
-    //   lineHeight: cellSideLength,
-    //   backgroundColor: getNumberBackgroundColor(randNumber)
-    // })
-
-    numberCell.css('background-color', getNumberBackgroundColor(randNumber))
-    numberCell.css('color', getNumberColor(randNumber))
-    numberCell.css('font-size', 0.6 * cellSideLength + 'px')
-    numberCell.css('line-height', cellSideLength + 'px')
-    numberCell.text(randNumber)
-    numberCell.animate({
+    domSetStyles(numberCell, {
       width: cellSideLength,
       height: cellSideLength,
       top: getPosTop(i, j),
-      left: getPosLeft(i, j)
+      left: getPosLeft(i, j),
+      color: getNumberColor(randNumber),
+      fontSize: 0.6 * cellSideLength,
+      lineHeight: cellSideLength,
+      backgroundColor: getNumberBackgroundColor(randNumber),
+      transition: transtr
+    })
+    setTimeout(() => {
+      numberCell.innerText = randNumber
+      domSetStyles(numberCell, {
+        transition: ''
+      })
     }, 50)
   }
 
   function showMoveAnimation (fromx, fromy, tox, toy) {
-    var numberCell = $('#number-cell-' + fromx + '-' + fromy)
-
-    numberCell.animate({
-      top: getPosTop(tox, toy),
-      left: getPosLeft(tox, toy)
-    }, ANIMATE_DURATION)
-    // const numberCell = dom(`#number-cell-${fromx}-${fromy}`)
-    // const fromTop = getPosTop(fromx, fromy)
-    // const fromLeft = getPosLeft(fromx, fromy)
-    // const toTop = getPosTop(tox, toy)
-    // const toLeft = getPosLeft(tox, toy)
-    // domSetStyles(numberCell, {
-    //   transform: `translate3d(${toLeft - fromLeft}px, ${toTop - fromTop}px, 0px)`,
-    //   transition: `transform ${ANIMATE_DURATION / 1000}s linear 0s`
-    // })
-    // setTimeout(() => {
-    //   domSetStyles(numberCell, {
-    //     top: toTop,
-    //     left: toLeft,
-    //     transform: '',
-    //     transition: ''
-    //   })
-    // }, ANIMATE_DURATION)
-    // console.log(fromTop, toTop, fromLeft, toLeft)
+    const numberCell = dom(`#number-cell-${fromx}-${fromy}`)
+    const fromTop = getPosTop(fromx, fromy)
+    const fromLeft = getPosLeft(fromx, fromy)
+    const toTop = getPosTop(tox, toy)
+    const toLeft = getPosLeft(tox, toy)
+    domSetStyles(numberCell, {
+      transform: `translate3d(${toLeft - fromLeft}px, ${toTop - fromTop}px, 0px)`,
+      transition: `transform ${ANIMATE_DURATION / 1000}s linear`
+    })
   }
 
   eventListen(document, 'keydown', e => {
@@ -367,7 +345,7 @@ const webapp2048 = () => {
               showMoveAnimation(i, j, i, k)
               board[i][k] = board[i][j]
               board[i][j] = 0
-              continue
+              break
             } else if (board[i][k] === board[i][j] && noBlockHorizontal(i, k, j, board) && !hasConflicted[i][k]) {
               showMoveAnimation(i, j, i, k)
               board[i][k] += board[i][j]
@@ -375,7 +353,7 @@ const webapp2048 = () => {
               score += board[i][k]
               updateScore(score)
               hasConflicted[i][k] = true
-              continue
+              break
             }
           }
         }
@@ -400,7 +378,6 @@ const webapp2048 = () => {
 
   function moveUp () {
     if (!canMoveUp(board)) return false
-
     for (let i = 1; i < 4; i++) {
       for (let j = 0; j < 4; j++) {
         if (board[i][j] !== 0) {
@@ -409,7 +386,7 @@ const webapp2048 = () => {
               showMoveAnimation(i, j, k, j)
               board[k][j] = board[i][j]
               board[i][j] = 0
-              continue
+              break
             } else if (board[k][j] === board[i][j] && noBlockVertical(j, k, i, board) && !hasConflicted[k][j]) {
               showMoveAnimation(i, j, k, j)
               board[k][j] += board[i][j]
@@ -417,7 +394,7 @@ const webapp2048 = () => {
               score += board[k][j]
               updateScore(score)
               hasConflicted[k][j] = true
-              continue
+              break
             }
           }
         }
@@ -450,7 +427,7 @@ const webapp2048 = () => {
               showMoveAnimation(i, j, k, j)
               board[k][j] = board[i][j]
               board[i][j] = 0
-              continue
+              break
             } else if (board[k][j] === board[i][j] && noBlockVertical(j, i, k, board) && !hasConflicted[k][j]) {
               showMoveAnimation(i, j, k, j)
               board[k][j] += board[i][j]
@@ -458,7 +435,7 @@ const webapp2048 = () => {
               score += board[k][j]
               updateScore(score)
               hasConflicted[k][j] = true
-              continue
+              break
             }
           }
         }
@@ -491,7 +468,7 @@ const webapp2048 = () => {
               showMoveAnimation(i, j, i, k)
               board[i][k] = board[i][j]
               board[i][j] = 0
-              continue
+              break
             } else if (board[i][k] === board[i][j] && noBlockHorizontal(i, j, k, board) && !hasConflicted[i][k]) {
               showMoveAnimation(i, j, i, k)
               board[i][k] += board[i][j]
@@ -499,7 +476,7 @@ const webapp2048 = () => {
               score += board[i][k]
               updateScore(score)
               hasConflicted[i][k] = true
-              continue
+              break
             }
           }
         }
@@ -542,8 +519,8 @@ const webapp2048 = () => {
 
   function isgameover () {
     if (nospace(board) && nomove(board)) {
-      $('#cover').show()
-      $('#gameOver').show()
+      domShow($cover)
+      domShow(dom('#gameOver'))
       return true
     } else {
       return false

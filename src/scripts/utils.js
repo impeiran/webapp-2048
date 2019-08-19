@@ -2,6 +2,13 @@ const isNumber = target => typeof target === 'number'
 
 const isUndefined = target => typeof target === 'undefined'
 
+const defaultDisplayDict = {
+  div: 'block',
+  ul: 'block',
+  li: 'block',
+  span: 'inline'
+}
+
 /**
  * 获取dom元素
  * @param {String} sel
@@ -42,6 +49,35 @@ export const domSetStyles = (el, option) => {
     el.style[item[0]] = isNumber(item[1]) ? item[1] + 'px' : item[1]
   })
   return true
+}
+
+export const domShow = el => {
+  if (!el) return
+  if (window.getComputedStyle(el).display === 'none') {
+    el.style.display = ''
+  }
+
+  if (['', 'none'].includes(window.getComputedStyle(el).display)) {
+    const defaultDis = defaultDisplayDict[el.tagName.toLowerCase()]
+    if (defaultDis) {
+      el.style.display = defaultDis
+      return
+    }
+  }
+
+  const temp = document.body.appendChild(document.createElement(el.nodeName))
+  const display = window.getComputedStyle(temp).display
+  document.body.removeChild(temp)
+  el.style.display = display
+}
+
+/**
+ * 隐藏元素
+ * @param {Object} el
+ */
+export const domHide = el => {
+  if (!el) return
+  el.style.display = 'none'
 }
 
 /**
