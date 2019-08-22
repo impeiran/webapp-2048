@@ -47,25 +47,7 @@ module.exports = merge(commonConfig, {
       }),
 
       new OptimizeCSSAssetsPlugin()
-    ],
-
-    // 分割chunk
-    splitChunks: {
-      chunks: 'async',
-      automaticNameDelimiter: '~',
-      name: true,
-      cacheGroups: {
-        // 分割出第三方库
-        vendors: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendor',
-          filename: utils.assetsPath('js/[name].[contenthash].js'),
-          chunks: 'all'
-        }
-      }
-    },
-
-    runtimeChunk: true
+    ]
   },
 
   plugins: [
