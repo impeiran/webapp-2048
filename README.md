@@ -1,6 +1,6 @@
 # webapp2048
 
-> A Vue.js project
+> A little game implement with native JavaScript, can be played both in PC or Mobile, about **5kb** after gzip.
 
 ## Build Setup
 
@@ -13,9 +13,9 @@ npm run dev
 
 # build for production with minification
 npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## Preview
+
+[Click Me](http://2048.impeiran.com)
+
