@@ -92,9 +92,7 @@ const webapp2048 = () => {
       }
     }
     updateBoardView()
-
-    score = 0
-    updateScore(score)
+    updateScore(0, false)
   }
 
   function getPosTop (i, j) {
@@ -146,7 +144,8 @@ const webapp2048 = () => {
     }
   }
 
-  function updateScore (score) {
+  function updateScore (sc, add = true) {
+    score = add ? score + sc : sc
     dom('#score').innerText = score
   }
 
@@ -350,9 +349,8 @@ const webapp2048 = () => {
               showMoveAnimation(i, j, i, k)
               board[i][k] += board[i][j]
               board[i][j] = 0
-              score += board[i][k]
-              updateScore(score)
               hasConflicted[i][k] = true
+              updateScore(board[i][k])
               break
             }
           }
@@ -391,8 +389,7 @@ const webapp2048 = () => {
               showMoveAnimation(i, j, k, j)
               board[k][j] += board[i][j]
               board[i][j] = 0
-              score += board[k][j]
-              updateScore(score)
+              updateScore(board[k][j])
               hasConflicted[k][j] = true
               break
             }
@@ -432,8 +429,7 @@ const webapp2048 = () => {
               showMoveAnimation(i, j, k, j)
               board[k][j] += board[i][j]
               board[i][j] = 0
-              score += board[k][j]
-              updateScore(score)
+              updateScore(board[k][j])
               hasConflicted[k][j] = true
               break
             }
@@ -473,8 +469,7 @@ const webapp2048 = () => {
               showMoveAnimation(i, j, i, k)
               board[i][k] += board[i][j]
               board[i][j] = 0
-              score += board[i][k]
-              updateScore(score)
+              updateScore(board[i][k])
               hasConflicted[i][k] = true
               break
             }
