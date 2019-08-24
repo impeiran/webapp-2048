@@ -9,7 +9,24 @@ import {
   eventListen
 } from './utils'
 
-const ANIMATE_DURATION = 250
+const ANIMATE_DURATION = 300
+
+const NUM_TO_BG = {
+  2: '#eee4da',
+  4: '#ede0c8',
+  8: '#f2b179',
+  16: '#f59563',
+  32: '#f67c5f',
+  64: '#f65e3b',
+  128: '#edcf72',
+  256: '#edcc61',
+  512: '#9c0',
+  1024: '#33b5e5',
+  2048: '#09c',
+  4096: '#a6c',
+  8192: '#93c',
+  '-1': '#8cb6c0'
+}
 
 const webapp2048 = () => {
   const board = []
@@ -25,6 +42,7 @@ const webapp2048 = () => {
   let startY = 0
   let endX = 0
   let endY = 0
+
   prepareForMobile()
   newgame()
 
@@ -35,11 +53,88 @@ const webapp2048 = () => {
     domShow($cover)
     domShow(dom('#coverList'))
   })
+
   eventListen($cover, 'click', () => {
     domHide($cover)
     dom('.cover-content').forEach(content => {
       domHide(content)
     })
+  })
+
+  eventListen(document, 'keydown', e => {
+    if (e.keyCode === 13 && window.getComputedStyle($cover).display !== 'none') {
+      domHide($cover)
+      dom('.cover-content').forEach(content => {
+        domHide(content)
+      })
+    }
+  })
+
+  eventListen(document, 'keydown', e => {
+    switch (e.keyCode) {
+      case 37:
+        if (isgameover() || !moveLeft()) return
+        break
+      case 38:
+        if (isgameover() || !moveUp()) return
+        break
+      case 39:
+        if (isgameover() || !moveRight()) return
+        break
+      case 40:
+        if (isgameover() || !moveDown()) return
+        break
+      default:
+        return
+    }
+    e.preventDefault()
+    setTimeout(generateOneNumber, ANIMATE_DURATION)
+  })
+
+  const gridContainer = dom('#grid-container')
+  eventListen(gridContainer, 'touchstart', e => {
+    startX = e.touches[0].pageX
+    startY = e.touches[0].pageY
+  })
+  eventListen(gridContainer, 'touchmove', e => {
+    e.preventDefault()
+    e.stopPropagation()
+  })
+  eventListen(gridContainer, 'touchend', e => {
+    endX = e.changedTouches[0].pageX
+    endY = e.changedTouches[0].pageY
+
+    const deltaX = endX - startX
+    const deltaY = endY - startY
+
+    if ((Math.abs(deltaX) < 0.15 * docWidth &&
+      Math.abs(deltaY) < 0.15 * docWidth) ||
+      isgameover()
+    ) {
+      return
+    }
+
+    if (Math.abs(deltaX) >= Math.abs(deltaY)) {
+      if (deltaX > 0) {
+        if (moveRight()) {
+          setTimeout(generateOneNumber, ANIMATE_DURATION)
+        }
+      } else {
+        if (moveLeft()) {
+          setTimeout(generateOneNumber, ANIMATE_DURATION)
+        }
+      }
+    } else {
+      if (deltaY > 0) {
+        if (moveDown()) {
+          setTimeout(generateOneNumber, ANIMATE_DURATION)
+        }
+      } else {
+        if (moveUp()) {
+          setTimeout(generateOneNumber, ANIMATE_DURATION)
+        }
+      }
+    }
   })
 
   function prepareForMobile () {
@@ -104,11 +199,13 @@ const webapp2048 = () => {
   }
 
   function updateBoardView () {
+    const gridCon = dom('#grid-container')
     dom('.number-cell').forEach(cell => domRemove(cell))
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < 4; j++) {
-        dom('#grid-container').innerHTML += `<div class = "number-cell" id = "number-cell-${i}-${j}"></div>`
-        const theNumberCell = dom(`#number-cell-${i}-${j}`)
+        const theNumberCell = document.createElement('div')
+        theNumberCell.classList.add('number-cell')
+        theNumberCell.id = `number-cell-${i}-${j}`
         if (board[i][j] === 0) {
           domSetStyles(theNumberCell, {
             width: 0,
@@ -139,6 +236,7 @@ const webapp2048 = () => {
           }
           domSetStyles(theNumberCell, { fontSize })
         }
+        gridCon.appendChild(theNumberCell)
         hasConflicted[i][j] = false
       }
     }
@@ -150,35 +248,7 @@ const webapp2048 = () => {
   }
 
   function getNumberBackgroundColor (number) {
-    switch (number) {
-      case 2:
-        return '#eee4da'
-      case 4:
-        return '#ede0c8'
-      case 8:
-        return '#f2b179'
-      case 16:
-        return '#f59563'
-      case 32:
-        return '#f67c5f'
-      case 64:
-        return '#f65e3b'
-      case 128:
-        return '#edcf72'
-      case 256:
-        return '#edcc61'
-      case 512:
-        return '#9c0'
-      case 1024:
-        return '#33b5e5'
-      case 2048:
-        return '#09c'
-      case 4096:
-        return '#a6c'
-      case 8192:
-        return '#93c'
-    }
-    return '#8cb6c0'
+    return NUM_TO_BG[number] ? NUM_TO_BG[number] : NUM_TO_BG['-1']
   }
 
   function getNumberColor (number) {
@@ -262,76 +332,9 @@ const webapp2048 = () => {
     const toLeft = getPosLeft(tox, toy)
     domSetStyles(numberCell, {
       transform: `translate3d(${toLeft - fromLeft}px, ${toTop - fromTop}px, 0px)`,
-      transition: `transform ${ANIMATE_DURATION / 1000}s linear`
+      transition: `transform ${ANIMATE_DURATION / 1000}s linear 0s`
     })
   }
-
-  eventListen(document, 'keydown', e => {
-    switch (e.keyCode) {
-      case 37:
-        if (isgameover() || !moveLeft()) return
-        break
-      case 38:
-        if (isgameover() || !moveUp()) return
-        break
-      case 39:
-        if (isgameover() || !moveRight()) return
-        break
-      case 40:
-        if (isgameover() || !moveDown()) return
-        break
-      default:
-        return
-    }
-    e.preventDefault()
-    setTimeout(generateOneNumber, 210)
-  })
-
-  const gridContainer = dom('#grid-container')
-  eventListen(gridContainer, 'touchstart', e => {
-    startX = e.touches[0].pageX
-    startY = e.touches[0].pageY
-  })
-  eventListen(gridContainer, 'touchmove', e => {
-    e.preventDefault()
-    e.stopPropagation()
-  })
-  eventListen(gridContainer, 'touchend', e => {
-    endX = e.changedTouches[0].pageX
-    endY = e.changedTouches[0].pageY
-
-    const deltaX = endX - startX
-    const deltaY = endY - startY
-
-    if ((Math.abs(deltaX) < 0.15 * docWidth &&
-      Math.abs(deltaY) < 0.15 * docWidth) ||
-      isgameover()
-    ) {
-      return
-    }
-
-    if (Math.abs(deltaX) >= Math.abs(deltaY)) {
-      if (deltaX > 0) {
-        if (moveRight()) {
-          setTimeout(generateOneNumber, 210)
-        }
-      } else {
-        if (moveLeft()) {
-          setTimeout(generateOneNumber, 210)
-        }
-      }
-    } else {
-      if (deltaY > 0) {
-        if (moveDown()) {
-          setTimeout(generateOneNumber, 210)
-        }
-      } else {
-        if (moveUp()) {
-          setTimeout(generateOneNumber, 210)
-        }
-      }
-    }
-  })
 
   function moveLeft () {
     if (!canMoveLeft(board)) return false
