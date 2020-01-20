@@ -19,3 +19,5 @@ npm run build
 
 [Click Me](http://2048.impeiran.com)
 
+![preview](./preview.png)
+
